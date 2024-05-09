@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Diffie Hellman Key Exchange</title>
+    </head>
+    <body>
+        <h3>
+            Diffie Hellman Key Exchange using HTML & JavaScript
+        </h3><hr>
+        <form id="form">
+            <label for="shared-prime">
+                Enter Shared Prime (n):
+            </label><br>
+            <input type="number" name="shared-prime" placeholder="e.g. 2, 3, 5, 7"/><br><br>
+            <label for="shared-base">
+                Enter Shared Base (g):
+            </label><br>
+            <input type="number" name="shared-base" placeholder="e.g. 1, 2, 3,..."/><br><br>
+            <label for="alice-secret">
+                Enter Alice Secret Key (x):
+            </label><br>
+            <input type="number" name="alice-secret" placeholder="e.g. 1, 2, 3,..."/><br><br>
+            <label for="bob-secret">
+                Enter Bob Secret Key (y):
+            </label><br>
+            <input type="number" name="bob-secret" placeholder="e.g. 1, 2, 3,..."/><br><br>
+            <button type="submit">Perform Exchange</button><br><br>
+        </form>
+
+        <!--script type="text/javascript" src="diffie.js"></script--!>
+
+        <script>
+            const form = document.querySelector("#form");
+
+            form.addEventListener("submit", (event) => {
+                event.preventDefault();
+                const fields = event.target.elements;
+
+                const sharedPrime = parseInt(fields["shared-prime"].value);
+                const sharedBase = parseInt(fields["shared-base"].value);
+                const aliceSecret = parseInt(fields["alice-secret"].value);
+                const bobSecret = parseInt(fields["bob-secret"].value);
+
+                console.log("-----------Diffie Hellman Key Exchange-----------");
+                console.log("Inputs: ", sharedPrime, sharedBase, aliceSecret, bobSecret);
+
+                const output = document.querySelector("#output");
+
+                output.innerHTML = "";
+
+                output.innerHTML += `Publicly Shared Prime: ${sharedPrime} <br>`;
+                output.innerHTML += `Publicly Shared Base: ${sharedBase} <br><br>`;
+
+                // Alice sends bob A = g^x mod n
+                const A = (sharedBase ** aliceSecret) % sharedPrime;
+                output.innerHTML += `Alice sends (A) over public channel: ${A} <br>`;
+
+                // Alice sends bob B = g^y mod n
+                const B = (sharedBase ** bobSecret) % sharedPrime;
+                output.innerHTML += `Bob sends (B) over public channel: ${B} <br><br>`;
+
+                console.log("Public Keys:", A, B);
+
+                output.innerHTML += "<strong>Privately calculated shared secret:</strong><br>";
+
+                // Alice computes shared secret: k1 = b^x mod n
+                const aliceSharedSecret = (B ** aliceSecret) % sharedPrime;
+                output.innerHTML += `Alice Shared Secret: ${aliceSharedSecret} <br>`;
+
+                // Alice computes shared secret: k2 = a^y mod n
+                const bobSharedSecret = (A ** bobSecret) % sharedPrime;
+                output.innerHTML += `Bob Shared Secret: ${bobSharedSecret} <br><br>`;
+
+                console.log("Secret Keys: ", aliceSharedSecret, bobSharedSecret);
+            });
+        </script>
+        <h3>Output</h3>
+        <div id="output"></div>
+    </body>
+</html>
