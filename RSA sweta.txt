@@ -1,0 +1,34 @@
+import random
+import sympy
+
+def gen_keys():
+    primerange = sympy.primerange(2, 251)
+    prime1, prime2 = random.sample(list(primerange), 2)
+
+    n = prime1 * prime2
+    phi = (prime1 - 1) * (prime2 -1)
+
+    e = random.choice([i for i in range(2, phi) if sympy.gcd(i, phi) == 1])
+
+    d = sympy.mod_inverse(e, phi)
+
+    public_key = (e, n)
+    private_key = (d, n)
+    return public_key, private_key
+
+def encrypt(msg, public_key):
+    e, n = public_key
+    ciphertext = [pow(ord(char), e, n) for char in msg]
+    return ciphertext
+
+def decrypt(ciphertext, private_key):
+    d, n = private_key
+    plaintext = ''.join([chr(pow(char, d, n)) for char in ciphertext])
+    return plaintext
+
+if __name__ == "__main__":
+    msg = input("Message: ")
+    public_key, private_key = gen_keys()
+    ciphertext = encrypt(msg, public_key)
+    print("Ciphtertext: ", ' '.join(map(str, ciphertext)))
+    print("Plaintext: ", decrypt(ciphertext, private_key))
